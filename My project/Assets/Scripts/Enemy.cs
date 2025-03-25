@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float attackCooldown;
     [SerializeField] private int damage;
     private float cooldownTimer = Mathf.Infinity;
-    [SerializeField] private BoxCollider2D boxCollider;
+    [SerializeField] private Collider2D boxCollider;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private float range;
     [SerializeField] private float colliderDistance;
@@ -38,8 +38,8 @@ public class Enemy : MonoBehaviour
                 Attack();
             }
         }
-        if (enemyPatrol != null)
-            enemyPatrol.enabled = PlayerInSight();
+        //if (enemyPatrol != null)
+        //    enemyPatrol.enabled = PlayerInSight();
     }
     void Attack()
     {

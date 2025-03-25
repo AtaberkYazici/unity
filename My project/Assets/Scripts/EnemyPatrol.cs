@@ -1,82 +1,71 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyPatrol : MonoBehaviour
 {
-    // [Header ("Patrol Points")]
-    // [SerializeField] private Transform leftEdge;
-    // [SerializeField] private Transform rightEdge;
+    [SerializeField] private Transform pointA;
+    [SerializeField] private Transform pointB;
+    [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private float speed = 2f;
+    [SerializeField] private Animator animator;
+    [SerializeField] private float idleDuration = 1f; // Bekleme süresi
+    [SerializeField] private float threshold = 0.3f;  // Mesafe kontrol eþiði
 
-    // [Header ("Enemy")]
-    // [SerializeField] private Transform enemy;
-
-    // [Header ("Movement parameters")]
-    // [SerializeField] private float speed;
-    // private Vector3 initScale;
-    // private bool movingLeft;
-    // // Start is called before the first frame update
-
-    // [SerializeField] private Animator animator;
-    // [Header ("Idle Behaviour")]
-    // [SerializeField] private float idleDuration;
-    // private float idleTimer;
-
-
-
-    [SerializeField] private GameObject pointA;    
-    [SerializeField] private GameObject pointB;
-    [SerializeField] private Rigidbody2D rb; 
-    // public Animator anim;
     private Transform currentPoint;
-    public float speed;
+    private bool isIdle = false;
 
-    void Start()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        // anim = GetComponent<Animator>();
-        currentPoint = pointB.transform;
-        // anim.SetBool("Moving",false);
+        if (!rb) rb = GetComponent<Rigidbody2D>();
+        if (!animator) animator = GetComponent<Animator>();
+
+        currentPoint = pointB;
     }
 
-//
     private void Update()
     {
-        Vector2 point = currentPoint.position - transform.position;
-        if(currentPoint == pointB.transform)
+        if (!isIdle)
         {
-            rb.velocity = new Vector2(speed, 0);
-        } 
-        else
-        {
-            rb. velocity = new Vector2(-speed, 0) ;
+            MoveEnemy();
         }
-        if(Vector2.Distance (transform.position, currentPoint.position) < 0.5f && currentPoint == pointB.transform)
-        {
-            flip();
-            // anim.SetBool("Moving",true);
-            currentPoint = pointA.transform;
-        }
-        if (Vector2.Distance(transform.position, currentPoint.position) < 0.5f && currentPoint == pointA. transform)
-        {
-            flip();
-            // anim.SetBool("Moving",true);
-            currentPoint = pointB.transform;
-        }
-  
-        
     }
-    private void flip()
+
+    private void MoveEnemy()
     {
-        // anim.SetBool("Moving",false);
-        Vector2 localScale = transform.localScale;
-        localScale.x *= -1;
-        transform.localScale = localScale;
+        // Hedefe doðru yön belirle ve hareket et
+        Vector2 direction = (currentPoint.position - rb.transform.position).normalized;
+        rb.velocity = new Vector2(direction.x * speed, rb.velocity.y);
+        animator.SetBool("Moving", true);
+
+        // Mesafe eþiðine göre hedefe ulaþýldý mý kontrol et
+        if (Vector2.Distance(rb.transform.position, currentPoint.position) < threshold)
+        {
+            StartCoroutine(IdleRoutine());
+        }
+    }
+
+    private IEnumerator IdleRoutine()
+    {
+        isIdle = true;
+        rb.velocity = new Vector2(0, rb.velocity.y);
+        animator.SetBool("Moving", false);
+        yield return new WaitForSeconds(idleDuration);
+        Flip();
+        // Hedefi deðiþtir
+        currentPoint = currentPoint == pointB ? pointA : pointB;
+        isIdle = false;
+    }
+
+    private void Flip()
+    {
+        // Yön deðiþtirmek için scale ters çevrilir
+        Vector3 scale = rb.transform.localScale;
+        scale.x *= -1;
+        rb.transform.localScale = scale;
     }
 
     private void OnDisable()
     {
-        // anim.SetBool("Moving", false);
+        animator.SetBool("Moving", false);
     }
-
 }
