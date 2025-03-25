@@ -43,7 +43,6 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOverUI()
     {
-        _isGameOver = true;
         Time.timeScale = 0;
         GameOverPanel.SetActive(true);
 
@@ -87,5 +86,7 @@ public class UIManager : MonoBehaviour
         Color finalTextColor = TextMeshProUGUI.color;
         finalTextColor.a = 1f;
         TextMeshProUGUI.color = finalTextColor;
+
+        _isGameOver = true;
     }
 }
