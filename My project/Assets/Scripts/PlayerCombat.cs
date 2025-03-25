@@ -72,7 +72,11 @@ public class PlayerCombat : MonoBehaviour
         //Debug.Log("Die");
         animator.SetBool("IsDead", true);
         
-        GetComponent<Collider2D>().enabled = false;
+        //GetComponent<Collider2D>().enabled = false;
+        UIManager.Instance.ShowGameOverUI();
         this.enabled = false;
+
     }
+
+
 }

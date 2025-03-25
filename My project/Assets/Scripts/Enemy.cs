@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -70,6 +69,10 @@ public class Enemy : MonoBehaviour
         
         GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
+
+        transform.parent.GetComponent<EnemyPatrol>().enabled = false;
+        boxCollider.enabled = false;
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
     bool PlayerInSight()
     {

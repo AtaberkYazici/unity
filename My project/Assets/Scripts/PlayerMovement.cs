@@ -8,49 +8,45 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController2D controller;
     public Animator animator;
-	[SerializeField] private float runSpeed = 40f;
+    [SerializeField] private float runSpeed = 40f;
 
-	float horizontalMove = 0f;
-	bool jump = false;
+    float horizontalMove = 0f;
+    bool jump = false;
     bool onGround = false;
-	bool crouch = false;
-	
-	// Update is called once per frame
-	void Update () {
+    bool crouch = false;
 
-		horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
-        if(onGround)
+    // Update is called once per frame
+    void Update()
+    {
+        animator.SetFloat("Speed", MathF.Abs(horizontalMove));
+
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
-        animator.SetFloat("Speed",MathF.Abs(horizontalMove));
-        }
-
-		if (Input.GetKey(KeyCode.UpArrow))
-		{
-            animator.SetBool("IsJumping",true);
-			jump = true;
+            animator.SetBool("IsJumping", true);
+            jump = true;
             onGround = false;
-		}
-		
-		// if (Input.GetButtonDown("Crouch"))
-		// {
-		// 	crouch = true;
-		// } 
-        // else if (Input.GetButtonUp("Crouch"))
-		// {
-		// 	crouch = false;
-		// }
-
-	}
+        }
+    }
 
     public void OnLanding()
     {
-        animator.SetBool("IsJumping",false);
+        animator.SetBool("IsJumping", false);
         onGround = true;
     }
-	void FixedUpdate ()
-	{
-		// Move our character
-		controller.Move(horizontalMove * Time.fixedDeltaTime, false, jump);
-		jump = false;
-	}
+
+    void FixedUpdate()
+    {
+        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+        // Move our character
+        controller.Move(horizontalMove * Time.fixedDeltaTime, false, jump);
+        jump = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("GameOver"))
+        {
+            UIManager.Instance.ShowGameOverUI();
+        }
+    }
 }
